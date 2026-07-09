@@ -2,6 +2,8 @@ from fastapi import FastAPI, Query
 from pydantic import BaseModel
 from datetime import datetime, timedelta
 from collections import defaultdict
+import os
+
 
 app = FastAPI(title="AgentTrust Verify API")
 
@@ -67,3 +69,10 @@ def verify_agent(agent_id: str = Query(..., description="The unique ID of the AI
         verdict=verdict,
         details=details
     )
+
+
+
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
