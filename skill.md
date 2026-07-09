@@ -1,17 +1,17 @@
 # AgentTrust Verify API
-Provides critical reputation scoring and malicious behavior analysis for autonomous AI agents to ensure secure cross-agent operations.
+Provides a reputation and risk score for an unknown AI agent, so another agent can decide whether it's safe to transact or collaborate with.
 
-Base URL: https://your-app-name.onrender.com
+Base URL: https://agent-trust-api-ysf8.onrender.com
 
 ## Endpoints
 
-### GET /verify
-Analyzes historical blacklists and real-time transaction activity frequencies to calculate an operational risk score for an unknown AI agent.
+### GET /verify?agent_id={agent_id}
+Analyzes historical blacklists and real-time transaction activity for the given agent ID and returns an operational risk score.
 
-**Example Curl:**
-curl -X GET "https://your-app-name.onrender.com/verify?agent_id=agent_0x71C9"
+**Example curl:**
+curl -X GET "https://agent-trust-api-ysf8.onrender.com/verify?agent_id=agent_0x71C9"
 
-**Example Response:**
+**Example response:**
 {
   "agent_id": "agent_0x71C9",
   "trusted": true,
@@ -20,9 +20,10 @@ curl -X GET "https://your-app-name.onrender.com/verify?agent_id=agent_0x71C9"
   "details": "Normal activity baseline. Minimal operational risk."
 }
 
-## How the Agent Should Use This
-1. Extract the unique identifier or public address (`agent_id`) of any third-party agent initiating contact or proposing a transaction.
-2. Query the `/verify` endpoint by appending the string ID as a query parameter.
-3. Inspect the `"trusted"` boolean field in the JSON payload response.
-4. If `"trusted": true`, proceed with standard inter-agent collaboration or execution pipelines.
-5. If `"trusted": false`, immediately close the communication channel, stop processing messages, and reject any execution payloads.
+## How the agent should use this
+1. Extract the unique identifier (`agent_id`) of any third-party agent initiating contact or proposing a transaction.
+2. Call `GET /verify?agent_id={agent_id}` with that ID as a query parameter.
+3. Read the `trusted` boolean in the JSON response.
+4. If `trusted` is `true`, proceed with normal inter-agent collaboration or execution.
+5. If `trusted` is `false`, stop processing messages from that agent and reject any execution payloads it sends.
+6. If the request errors or times out (e.g. cold start), retry once after a short delay before treating the agent as unverified.
